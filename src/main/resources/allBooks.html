@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Książek</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        .btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<h1>📚 Lista Książek</h1>
+
+<table id="booksTable">
+    <thead>
+    <tr>
+        <th>Nazwa</th>
+        <th>Autor</th>
+        <th>Gatunek</th>
+        <th>Ocena</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Książki będą wyświetlane tutaj -->
+    </tbody>
+</table>
+
+<a href="mainPage.html" class="btn">⬅️ Powrót do Huba</a>
+
+<script>
+    // Funkcja do pobierania książek
+    function fetchBooks() {
+        fetch('http://localhost:8080/books')  // Wysłanie zapytania do endpointu
+            .then(response => response.json())  // Odbiór odpowiedzi w formacie JSON
+            .then(data => {
+                const books = data.responses;  // Oczekujemy, że odpowiedź zawiera listę książek
+                const tableBody = document.getElementById('booksTable').getElementsByTagName('tbody')[0];
+
+                // Sprawdzanie, czy są książki
+                if (books.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4">Brak książek w bazie.</td></tr>';
+                } else {
+                    // Dodawanie książek do tabeli
+                    books.forEach(book => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${book.name}</td>
+                            <td>${book.author}</td>
+                            <td>${book.genre}</td>
+                            <td>${book.rating}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Błąd przy pobieraniu książek:', error);
+                alert('Wystąpił błąd podczas ładowania książek.');
+            });
+    }
+
+    // Ładowanie książek po załadowaniu strony
+    window.onload = fetchBooks;
+</script>
+
+</body>
+</html>

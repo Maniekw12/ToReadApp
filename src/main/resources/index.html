@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodaj Książkę</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        input, textarea {
+            padding: 12px;
+            font-size: 16px;
+            width: 300px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>📚 Dodaj Nową Książkę</h1>
+
+<div class="form-container">
+    <form id="bookForm">
+        <label for="name">Nazwa książki:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="author">Autor:</label>
+        <input type="text" id="author" name="author" required><br>
+
+        <label for="genre">Gatunek:</label>
+        <input type="text" id="genre" name="genre" required><br>
+
+        <label for="description">Opis:</label>
+        <textarea id="description" name="description" required></textarea><br>
+
+        <label for="rating">Ocena:</label>
+        <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" required><br>
+
+        <button type="submit" class="btn">Dodaj Książkę</button>
+    </form>
+
+    <a href="mainPage.html" class="btn back-btn">⬅️ Powrót do Huba</a>
+</div>
+
+<script>
+    document.getElementById('bookForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Zbieranie danych z formularza
+        const bookData = {
+            name: document.getElementById('name').value,
+            author: document.getElementById('author').value,
+            genre: document.getElementById('genre').value,
+            description: document.getElementById('description').value,
+            rating: parseFloat(document.getElementById('rating').value)
+        };
+
+        // Wysyłanie danych do serwera za pomocą AJAX (fetch)
+        fetch('http://localhost:8080/post', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bookData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert('Książka została dodana!');
+                console.log(data);
+            })
+            .catch(error => {
+                alert('Wystąpił błąd');
+                console.error('Błąd:', error);
+            });
+    });
+</script>
+
+</body>
+</html>
