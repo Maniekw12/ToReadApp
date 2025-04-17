@@ -12,4 +12,9 @@ public interface BooksRepository extends JpaRepository<BookEntity, Long> {
 
     List<BookEntity> findAll();
 
+    boolean existsByName(String name);
+
+    boolean existsByAuthor(String author);
+
+    List<BookEntity> findByPriorityGreaterThanEqual(int priority);
 }
