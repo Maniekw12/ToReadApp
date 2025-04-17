@@ -14,4 +14,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse> handleNonExistingSwiftCode(HttpServletRequest req, Exception e) throws Exception {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(DuplicatedIdException.class)
+    public ResponseEntity<BaseResponse> handleConflict(HttpServletRequest req, Exception e) throws Exception {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(EmptyDataException.class)
+    public ResponseEntity<BaseResponse> emptyData(HttpServletRequest req, Exception e) throws Exception {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse(e.getMessage()));
+    }
 }
