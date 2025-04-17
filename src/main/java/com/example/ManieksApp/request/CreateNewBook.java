@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateNewBook {
-    String name;
-    String author;
-    String genre;
-    String description;
-    double rating;
+    private int priority;
+    private String name;
+    private String author;
+    private int pages;
+    private int readPages;
+    //private boolean read;
 }
