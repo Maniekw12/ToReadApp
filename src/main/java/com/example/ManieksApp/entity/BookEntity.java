@@ -3,24 +3,24 @@ package com.example.ManieksApp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
 @Entity
-@Table(name = "item")
+@Table(name = "item",indexes = {
+        @Index(name = "idx_name", columnList = "name"),
+        @Index(name = "idx_author", columnList = "author")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    String name;
-    String author;
-    String genre;
-    String description;
-    double rating;
+    private int priority;
+    private String name;
+    private String author;
+    private int pages;
+    private int readPages;
+    private boolean read;
 }

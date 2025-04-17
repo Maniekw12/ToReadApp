@@ -8,10 +8,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OneBookResponse {
-    Long id;
-    String name;
-    String author;
-    String genre;
-    String description;
-    double rating;
+    private Long id;
+    private int priority;
+    private String name;
+    private String author;
+    private int pages;
+    private int readPages;
+    private boolean read;
 }
