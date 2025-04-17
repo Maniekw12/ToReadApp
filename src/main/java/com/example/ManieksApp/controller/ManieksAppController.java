@@ -1,11 +1,10 @@
 package com.example.ManieksApp.controller;
 
 import com.example.ManieksApp.request.CreateNewBook;
-import com.example.ManieksApp.response.AllBooksRespone;
+import com.example.ManieksApp.response.BooksRespone;
 import com.example.ManieksApp.response.BaseResponse;
 import com.example.ManieksApp.response.OneBookResponse;
 import com.example.ManieksApp.service.BookAppService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,11 +16,17 @@ public class ManieksAppController {
     BookAppService bookAppService;
 
     @GetMapping("/books")
-    public AllBooksRespone getAllBooks(){
+    public BooksRespone getAllBooks(){
         return bookAppService.getAllBooksFromDataBase();
     }
 
-    @GetMapping("/books/{id}")
+    @GetMapping("/books/{read}")
+    public BooksRespone getBooksByReadStatus(@PathVariable String read){
+        return bookAppService.getBooksByReadStatus(read);
+    }
+
+
+    @GetMapping("/book/{id}")
     public OneBookResponse getOneBook(@PathVariable Long id){
         return bookAppService.getOneBook(id);
     }

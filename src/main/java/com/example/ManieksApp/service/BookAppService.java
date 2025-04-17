@@ -1,34 +1,48 @@
 package com.example.ManieksApp.service;
 
 import com.example.ManieksApp.entity.BookEntity;
+import com.example.ManieksApp.exceptions.DuplicatedIdException;
 import com.example.ManieksApp.exceptions.NonExistingBook;
 import com.example.ManieksApp.mapper.BookMapper;
 import com.example.ManieksApp.repository.BooksRepository;
 import com.example.ManieksApp.request.CreateNewBook;
-import com.example.ManieksApp.response.AllBooksRespone;
+import com.example.ManieksApp.response.BooksRespone;
 import com.example.ManieksApp.response.BaseResponse;
 import com.example.ManieksApp.response.OneBookResponse;
+import com.example.ManieksApp.util.ValidateDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Book;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookAppService {
     @Autowired
     BooksRepository booksRepository;
 
-    public BaseResponse addBook(CreateNewBook book) {
-        BookEntity bookToAdd = BookMapper.mapToEntity(book);
+    public BaseResponse addBook(CreateNewBook newBook) {
+        ValidateDate.validateAuthor(newBook.getAuthor());
+        ValidateDate.validateName(newBook.getName());
+        validateNameAndAuthor(newBook);
+
+        BookEntity bookToAdd = BookMapper.mapToEntity(newBook);
+        ArrayList<BookEntity> booksWithGreaterPriority = (ArrayList<BookEntity>) booksRepository.findByPriorityGreaterThanEqual(bookToAdd.getPriority());
+
+        for (BookEntity book : booksWithGreaterPriority) {
+            book.setPriority(book.getPriority() + 1);
+        }
 
         booksRepository.save(bookToAdd);
+        booksRepository.saveAll(booksWithGreaterPriority);
         return new BaseResponse("Book added successfully");
     }
 
     public OneBookResponse getOneBook(Long id) {
-        ValidateBookExistence(id);
+        validateBookExistence(id);
         Optional<BookEntity> entityOptional = booksRepository.findById(id);
         if (entityOptional.isPresent()) {
             BookEntity entity = entityOptional.get();
@@ -37,7 +51,7 @@ public class BookAppService {
         return new OneBookResponse();
     }
 
-    public AllBooksRespone getAllBooksFromDataBase() {
+    public BooksRespone getAllBooksFromDataBase() {
         ArrayList<BookEntity> allBooks = (ArrayList<BookEntity>) booksRepository.findAll();
         ArrayList<OneBookResponse> bookResponses = new ArrayList<>();
 
@@ -46,14 +60,47 @@ public class BookAppService {
             bookResponses.add(bookResponse);
         }
 
-        return AllBooksRespone.builder().
+        return BooksRespone.builder().
                 responses(bookResponses)
                 .build();
     }
 
-    private void ValidateBookExistence(Long id) {
+    public BooksRespone getBooksByReadStatus(String readStatus) {
+        ArrayList<BookEntity> allBooks = (ArrayList<BookEntity>) booksRepository.findAll();
+        ArrayList<OneBookResponse> booksByStatus = new ArrayList<>();
+
+        switch (readStatus) {
+            case "y":
+                booksByStatus = (ArrayList<OneBookResponse>) allBooks.stream()
+                        .map(x -> BookMapper.mapToOneBookResponse(x))
+                        .filter(x -> x.isRead())
+                        .collect(Collectors.toList());
+                break;
+
+            case "n":
+                booksByStatus = (ArrayList<OneBookResponse>) allBooks.stream()
+                        .map(x -> BookMapper.mapToOneBookResponse(x))
+                        .filter(x -> !x.isRead())
+                        .collect(Collectors.toList());
+                break;
+        }
+
+        booksByStatus.sort(Comparator.comparingInt(OneBookResponse::getPriority));
+
+        return BooksRespone.builder().
+                responses(booksByStatus)
+                .build();
+    }
+
+    private void validateBookExistence(Long id) {
         if (!booksRepository.existsById(id)) {
             throw new NonExistingBook("Book with id " + id + " does not exist");
+        }
+    }
+
+    private void validateNameAndAuthor(CreateNewBook newBook) {
+        if(booksRepository.existsByName(newBook.getName().trim()) && booksRepository.existsByAuthor(newBook.getAuthor().trim())) {
+            throw new DuplicatedIdException("Book with name " + newBook.getName().trim() + " and author "+ newBook.getAuthor().trim() + "already exists");
         }
     }
 
