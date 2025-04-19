@@ -9,12 +9,11 @@ import com.example.ManieksApp.request.CreateNewBook;
 import com.example.ManieksApp.response.BooksRespone;
 import com.example.ManieksApp.response.BaseResponse;
 import com.example.ManieksApp.response.OneBookResponse;
-import com.example.ManieksApp.util.ValidateDate;
+import com.example.ManieksApp.util.ValidateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,8 +24,8 @@ public class BookAppService {
     BooksRepository booksRepository;
 
     public BaseResponse addBook(CreateNewBook newBook) {
-        ValidateDate.validateAuthor(newBook.getAuthor());
-        ValidateDate.validateName(newBook.getName());
+        ValidateData.validateAuthor(newBook.getAuthor());
+        ValidateData.validateName(newBook.getName());
         validateNameAndAuthor(newBook);
 
         BookEntity bookToAdd = BookMapper.mapToEntity(newBook);
@@ -91,7 +90,13 @@ public class BookAppService {
                 responses(booksByStatus)
                 .build();
     }
-
+    
+    public BaseResponse removeBook(Long id) {
+        validateBookExistence(id);
+        booksRepository.deleteById(id);
+        return new BaseResponse("Book removed successfully");
+    }
+    
     private void validateBookExistence(Long id) {
         if (!booksRepository.existsById(id)) {
             throw new NonExistingBook("Book with id " + id + " does not exist");

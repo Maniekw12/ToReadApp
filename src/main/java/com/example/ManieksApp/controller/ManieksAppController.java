@@ -25,7 +25,6 @@ public class ManieksAppController {
         return bookAppService.getBooksByReadStatus(read);
     }
 
-
     @GetMapping("/book/{id}")
     public OneBookResponse getOneBook(@PathVariable Long id){
         return bookAppService.getOneBook(id);
@@ -33,7 +32,7 @@ public class ManieksAppController {
 
     @DeleteMapping("/books/delete/{id}")
     public BaseResponse deleteOneBook(@PathVariable Long id){
-        return new BaseResponse("Okk");
+        return bookAppService.removeBook(id);
     }
 
     @PostMapping("/post")
