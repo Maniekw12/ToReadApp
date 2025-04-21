@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dodaj nową książkę</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 1em;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+            width: 300px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .back-link {
+            margin-top: 2em;
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        pre {
+            margin-top: 1em;
+            text-align: left;
+            background-color: #f0f0f0;
+            padding: 1em;
+            border-radius: 5px;
+            width: 300px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>➕ Dodaj nową książkę</h1>
+    <form id="bookForm">
+        <input type="text" id="name" placeholder="Tytuł" required>
+        <input type="text" id="author" placeholder="Autor" required>
+        <input type="number" id="priority" placeholder="Priorytet" required>
+        <input type="number" id="pages" placeholder="Liczba stron" required>
+        <input type="number" id="readPages" placeholder="Przeczytane strony" required>
+        <button type="submit">Dodaj książkę</button>
+    </form>
+
+    <pre id="response"></pre>
+    <a href="index.html" class="back-link">← Powrót do menu</a>
+</div>
+
+<script>
+    const form = document.getElementById('bookForm');
+    const responseDisplay = document.getElementById('response');
+    const apiUrl = "http://localhost:8080/post";
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const book = {
+            name: document.getElementById('name').value,
+            author: document.getElementById('author').value,
+            priority: parseInt(document.getElementById('priority').value),
+            pages: parseInt(document.getElementById('pages').value),
+            readPages: parseInt(document.getElementById('readPages').value)
+        };
+
+        try {
+            const res = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(book)
+            });
+            const data = await res.json();
+            responseDisplay.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+            responseDisplay.textContent = "Błąd przy wysyłaniu danych: " + error.message;
+        }
+    });
+</script>
+</body>
+</html>
