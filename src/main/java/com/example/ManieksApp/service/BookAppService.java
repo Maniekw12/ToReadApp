@@ -28,9 +28,11 @@ public class BookAppService {
         ValidateData.validateName(newBook.getName());
         validateNameAndAuthor(newBook);
 
-        BookEntity bookToAdd = BookMapper.mapToEntity(newBook);
+        int maxPriority = booksRepository.findTopByOrderByPriorityDesc().getPriority();
+        BookEntity bookToAdd = BookMapper.mapToEntity(newBook,maxPriority);
         ArrayList<BookEntity> booksWithGreaterPriority = (ArrayList<BookEntity>) booksRepository.findByPriorityGreaterThanEqual(bookToAdd.getPriority());
 
+        //TODO make it a method
         for (BookEntity book : booksWithGreaterPriority) {
             book.setPriority(book.getPriority() + 1);
         }
@@ -90,10 +92,23 @@ public class BookAppService {
                 responses(booksByStatus)
                 .build();
     }
-    
+
     public BaseResponse removeBook(Long id) {
         validateBookExistence(id);
+        BookEntity bookToRemove = booksRepository.findById(id).get();
+        int bookToRemovePriority = bookToRemove.getPriority();
+        boolean isRead = bookToRemove.isRead();
+
         booksRepository.deleteById(id);
+        if(!isRead){
+            ArrayList<BookEntity> booksWithGreaterPriority = (ArrayList<BookEntity>) booksRepository.findByPriorityGreaterThanEqual(bookToRemovePriority);
+            //TODO make it a method
+            for (BookEntity book : booksWithGreaterPriority) {
+                book.setPriority(book.getPriority() - 1);
+            }
+            booksRepository.saveAll(booksWithGreaterPriority);
+        }
+
         return new BaseResponse("Book removed successfully");
     }
     
