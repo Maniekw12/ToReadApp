@@ -17,4 +17,6 @@ public interface BooksRepository extends JpaRepository<BookEntity, Long> {
     boolean existsByAuthor(String author);
 
     List<BookEntity> findByPriorityGreaterThanEqual(int priority);
+
+    BookEntity findTopByOrderByPriorityDesc();
 }
