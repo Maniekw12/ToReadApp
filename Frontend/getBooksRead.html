@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Przeczytane książki</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2em;
+        }
+
+        h1 {
+            margin-bottom: 1em;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        pre {
+            margin-top: 2em;
+            background-color: #f0f0f0;
+            padding: 1em;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 800px;
+            white-space: pre-wrap;
+            text-align: left;
+        }
+
+        .back-link {
+            margin-top: 2em;
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📘 Przeczytane książki</h1>
+    <button onclick="getReadBooks()">Pokaż przeczytane</button>
+    <pre id="booksList">Kliknij przycisk, aby załadować przeczytane książki...</pre>
+    <a href="index.html" class="back-link">← Powrót do menu</a>
+</div>
+
+<script>
+    const apiUrl = "http://localhost:8080/books/y";
+
+    async function getReadBooks() {
+        const display = document.getElementById('booksList');
+        display.textContent = "Ładowanie danych...";
+
+        try {
+            const res = await fetch(apiUrl);
+            const data = await res.json();
+
+            if (data.responses && data.responses.length > 0) {
+                display.textContent = data.responses.map(book => (
+                    `📖 ${book.name} — ${book.author}\n` +
+                    `ID: ${book.id}, Priorytet: ${book.priority}, Strony: ${book.pages}, Przeczytane: ${book.readPages}\n`
+                )).join('\n');
+            } else {
+                display.textContent = "Brak przeczytanych książek.";
+            }
+        } catch (error) {
+            display.textContent = "Błąd podczas pobierania danych: " + error.message;
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Znajdź książkę po ID</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2em;
+        }
+
+        h1 {
+            margin-bottom: 1em;
+        }
+
+        input {
+            padding: 10px;
+            width: 200px;
+            margin-bottom: 1em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #138496;
+        }
+
+        pre {
+            margin-top: 2em;
+            background-color: #f0f0f0;
+            padding: 1em;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 600px;
+            white-space: pre-wrap;
+            text-align: left;
+        }
+
+        .back-link {
+            margin-top: 2em;
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔎 Znajdź książkę po ID</h1>
+    <input type="number" id="bookId" placeholder="Wpisz ID książki">
+    <button onclick="getBookById()">Szukaj</button>
+    <pre id="bookDetails">Wprowadź ID i kliknij "Szukaj", aby zobaczyć książkę...</pre>
+    <a href="index.html" class="back-link">← Powrót do menu</a>
+</div>
+
+<script>
+    async function getBookById() {
+        const id = document.getElementById('bookId').value;
+        const display = document.getElementById('bookDetails');
+
+        if (!id) {
+            display.textContent = "Proszę podać ID książki.";
+            return;
+        }
+
+        display.textContent = "Ładowanie danych...";
+
+        try {
+            const res = await fetch(`http://localhost:8080/book/${id}`);
+            if (!res.ok) {
+                const errData = await res.json();
+                display.textContent = `Błąd: ${errData.message || 'Nie znaleziono książki.'}`;
+                return;
+            }
+
+            const book = await res.json();
+            display.textContent =
+                `📖 ${book.name} — ${book.author}\n\n` +
+                `ID: ${book.id}\n` +
+                `Priorytet: ${book.priority}\n` +
+                `Strony: ${book.pages}\n` +
+                `Przeczytane: ${book.readPages}\n` +
+                `Czy przeczytana: ${book.read}`;
+        } catch (error) {
+            display.textContent = "Błąd połączenia z serwerem: " + error.message;
+        }
+    }
+</script>
+</body>
+</html>
