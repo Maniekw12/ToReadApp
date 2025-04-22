@@ -10,6 +10,8 @@ public interface BooksRepository extends JpaRepository<BookEntity, Long> {
 
     Optional<BookEntity> findById(Long id);
 
+    Optional<BookEntity> findByNameAndAuthor(String name, String author);
+
     List<BookEntity> findAll();
 
     boolean existsByName(String name);
@@ -18,5 +20,10 @@ public interface BooksRepository extends JpaRepository<BookEntity, Long> {
 
     List<BookEntity> findByPriorityGreaterThanEqual(int priority);
 
-    BookEntity findTopByOrderByPriorityDesc();
+    Optional<BookEntity> findTopByReadFalseOrderByPriorityDesc();
+
+    List<BookEntity> findByPriorityGreaterThan(int priority);
+
+    List<BookEntity> findByReadFalseOrderByPriority();
+
 }

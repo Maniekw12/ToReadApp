@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,17 +29,17 @@ public class BookAppService {
         ValidateData.validateName(newBook.getName());
         validateNameAndAuthor(newBook);
 
-        int maxPriority = booksRepository.findTopByOrderByPriorityDesc().getPriority();
-        BookEntity bookToAdd = BookMapper.mapToEntity(newBook,maxPriority);
-        ArrayList<BookEntity> booksWithGreaterPriority = (ArrayList<BookEntity>) booksRepository.findByPriorityGreaterThanEqual(bookToAdd.getPriority());
-
-        //TODO make it a method
-        for (BookEntity book : booksWithGreaterPriority) {
-            book.setPriority(book.getPriority() + 1);
+        int maxPriority = 0;
+        Optional<BookEntity> maxPriorityEntity = booksRepository.findTopByReadFalseOrderByPriorityDesc();
+        if(maxPriorityEntity.isPresent()) {
+            maxPriority = maxPriorityEntity.get().getPriority();
         }
 
+        BookEntity bookToAdd = BookMapper.mapToEntity(newBook,maxPriority);
+
+        increasePrioritiesAfterInsert(bookToAdd.getPriority());
         booksRepository.save(bookToAdd);
-        booksRepository.saveAll(booksWithGreaterPriority);
+
         return new BaseResponse("Book added successfully");
     }
 
@@ -95,23 +96,68 @@ public class BookAppService {
 
     public BaseResponse removeBook(Long id) {
         validateBookExistence(id);
+
         BookEntity bookToRemove = booksRepository.findById(id).get();
         int bookToRemovePriority = bookToRemove.getPriority();
-        boolean isRead = bookToRemove.isRead();
 
         booksRepository.deleteById(id);
-        if(!isRead){
-            ArrayList<BookEntity> booksWithGreaterPriority = (ArrayList<BookEntity>) booksRepository.findByPriorityGreaterThanEqual(bookToRemovePriority);
-            //TODO make it a method
-            for (BookEntity book : booksWithGreaterPriority) {
-                book.setPriority(book.getPriority() - 1);
-            }
-            booksRepository.saveAll(booksWithGreaterPriority);
-        }
+
+        lowerPrioritiesAfterInsert(bookToRemovePriority);
 
         return new BaseResponse("Book removed successfully");
     }
-    
+
+    //TODO change the logic to creating new sorted list and then inserting element between some of them
+    public BaseResponse updateBook(Long id, CreateNewBook newBook) {
+        ValidateData.validateAuthor(newBook.getAuthor());
+        ValidateData.validateName(newBook.getName());
+        validateBookExistence(id);
+
+        return new BaseResponse("Book successfully updated");
+    }
+
+    private void rebuildUnreadBookPriorities() {
+        // Get all unread books ordered by their current priority
+        List<BookEntity> unreadBooks = booksRepository.findByReadFalseOrderByPriority();
+
+        // Reassign priorities sequentially starting from 1
+        int priority = 1;
+        for (BookEntity book : unreadBooks) {
+            book.setPriority(priority++);
+        }
+
+        // Save all updated books
+        booksRepository.saveAll(unreadBooks);
+    }
+
+    private void lowerPrioritiesAfterInsert(int priority) {
+        List<BookEntity> booksWithGreaterPriority = booksRepository.findByPriorityGreaterThan(priority);
+
+        booksWithGreaterPriority = booksWithGreaterPriority.stream()
+                .filter(x -> !x.isRead())
+                .collect(Collectors.toList());
+
+        for (BookEntity book : booksWithGreaterPriority) {
+            book.setPriority(book.getPriority() - 1);
+        }
+
+        booksRepository.saveAll(booksWithGreaterPriority);
+    }
+
+    private void increasePrioritiesAfterInsert(int priority) {
+        List<BookEntity> booksWithGreaterPriority = booksRepository.findByPriorityGreaterThanEqual(priority);
+
+        booksWithGreaterPriority = booksWithGreaterPriority.stream()
+                .filter(x -> !x.isRead())
+                .collect(Collectors.toList());
+
+        for (BookEntity book : booksWithGreaterPriority) {
+            book.setPriority(book.getPriority() + 1);
+        }
+
+        booksRepository.saveAll(booksWithGreaterPriority);
+    }
+
     private void validateBookExistence(Long id) {
         if (!booksRepository.existsById(id)) {
             throw new NonExistingBook("Book with id " + id + " does not exist");

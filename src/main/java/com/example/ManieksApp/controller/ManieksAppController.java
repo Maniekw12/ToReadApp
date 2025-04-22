@@ -40,8 +40,8 @@ public class ManieksAppController {
         return bookAppService.addBook(newBook);
     }
 
-    @PutMapping("/books/update")
-    public BaseResponse updateOneBook(@RequestBody CreateNewBook newBook){
-        return new BaseResponse("Okk");
+    @PutMapping("/books/update/{id}")
+    public BaseResponse updateOneBook(@RequestBody CreateNewBook newBook,@PathVariable Long id){
+        return bookAppService.updateBook(id,newBook);
     }
 }
