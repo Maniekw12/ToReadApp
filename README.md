@@ -78,6 +78,7 @@ docker compose down
 ```
 ## THINGS TO DO:
 - Make Dockerfile to run the entire Application using one command.
+- Create new Frontend.
 
 
 
