@@ -13,10 +13,7 @@ import com.example.ManieksApp.util.ValidateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -102,6 +99,7 @@ public class BookAppService {
 
         booksRepository.deleteById(id);
 
+
         lowerPrioritiesAfterInsert(bookToRemovePriority);
 
         return new BaseResponse("Book removed successfully");
@@ -113,21 +111,52 @@ public class BookAppService {
         ValidateData.validateName(newBook.getName());
         validateBookExistence(id);
 
+        BookEntity existingBook = booksRepository.findById(id).get();
+        boolean wasRead = existingBook.isRead();
+
+        int maxPriority = booksRepository.findTopByReadFalseOrderByPriorityDesc()
+                .map(BookEntity::getPriority)
+                .orElse(0);
+
+        BookMapper.mapToEntity(newBook, maxPriority, existingBook);
+        boolean isNowRead = existingBook.isRead();
+
+        if (wasRead && !isNowRead) {
+            List<BookEntity> unread = booksRepository.findByReadFalseOrderByPriority();
+            int desiredPriority = existingBook.getPriority();
+            if (desiredPriority < 1) desiredPriority = 1;
+            if (desiredPriority > unread.size()) desiredPriority = unread.size() + 1;
+
+            unread.add(desiredPriority - 1, existingBook);
+            reorderUnreadBooks(unread);
+
+        } else if (!wasRead && isNowRead) {
+            List<BookEntity> unread = booksRepository.findByReadFalseOrderByPriority();
+            unread.remove(existingBook);
+            reorderUnreadBooks(unread);
+            existingBook.setPriority(Integer.MAX_VALUE);
+
+        } else if (!isNowRead) {
+            List<BookEntity> unread = booksRepository.findByReadFalseOrderByPriority();
+            unread.remove(existingBook);
+            int newPriority = existingBook.getPriority();
+            if (newPriority < 1) newPriority = 1;
+            if (newPriority > unread.size()) newPriority = unread.size() + 1;
+            unread.add(newPriority - 1, existingBook);
+            reorderUnreadBooks(unread);
+        }
+
+        booksRepository.save(existingBook);
         return new BaseResponse("Book successfully updated");
     }
 
-    private void rebuildUnreadBookPriorities() {
-        // Get all unread books ordered by their current priority
-        List<BookEntity> unreadBooks = booksRepository.findByReadFalseOrderByPriority();
 
-        // Reassign priorities sequentially starting from 1
+    private void reorderUnreadBooks(List<BookEntity> books) {
         int priority = 1;
-        for (BookEntity book : unreadBooks) {
+        for (BookEntity book : books) {
             book.setPriority(priority++);
         }
-
-        // Save all updated books
-        booksRepository.saveAll(unreadBooks);
+        booksRepository.saveAll(books);
     }
 
     private void lowerPrioritiesAfterInsert(int priority) {

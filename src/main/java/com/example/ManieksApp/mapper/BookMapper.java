@@ -10,13 +10,47 @@ import org.springframework.stereotype.Component;
 
 public class BookMapper {
 
-    public static BookEntity mapToEntity(CreateNewBook NewBook, int maxPriority) {
+    public static BookEntity mapToEntity(CreateNewBook NewBook, int maxPriority, BookEntity bookToUpdate) {
         boolean isRead = false;
         int readPages = NewBook.getReadPages();
         int priority = NewBook.getPriority();
 
         if(priority > maxPriority) {
             priority = maxPriority+1;
+        }
+        if(priority < 1) {
+            priority = 1;
+        }
+
+        if(readPages >= NewBook.getPages()) {
+            isRead = true;
+            priority = Integer.MAX_VALUE;
+            readPages = NewBook.getPages();
+        }
+        else if(readPages < 0) {
+            readPages = 0;
+        }
+
+        bookToUpdate.setPriority(priority);
+        bookToUpdate.setReadPages(readPages);
+        bookToUpdate.setAuthor(NewBook.getAuthor());
+        bookToUpdate.setName(NewBook.getName());
+        bookToUpdate.setPages(NewBook.getPages());
+        bookToUpdate.setRead(isRead);
+
+        return bookToUpdate;
+    }
+
+    public static BookEntity mapToEntity(CreateNewBook NewBook, int maxPriority) {
+        boolean isRead = false;
+        int readPages = NewBook.getReadPages();
+        int priority = NewBook.getPriority();
+
+
+        if(priority > maxPriority) {
+            priority = maxPriority+1;
+        } else if(priority < 1) {
+            priority = 1;
         }
 
         if(readPages >= NewBook.getPages()) {
