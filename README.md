@@ -1,6 +1,6 @@
 
 > [!WARNING]
-> NOTE: APPLICATION IN PROGRESS
+> NOTE: 🚧 Application under development
 >
 📌 Features of Maniek's Book App
 
