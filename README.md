@@ -21,6 +21,18 @@
 
 ![image](https://github.com/user-attachments/assets/be29cbb4-d3de-4b50-a743-13b8f42ab210)
 
+![image](https://github.com/user-attachments/assets/708f7a17-562c-4b77-b4bb-d8616694bd72)
+
+![image](https://github.com/user-attachments/assets/c373fd3c-e21b-400d-8890-a1486576edc8)
+
+![image](https://github.com/user-attachments/assets/553645d0-3121-4c46-a5c6-38b6be229ab1)
+
+![image](https://github.com/user-attachments/assets/2c59dc77-0aaa-468c-a081-c0014df03ce4)
+
+![image](https://github.com/user-attachments/assets/3096973f-b32b-4732-8ae6-cc10502364bc)
+
+![image](https://github.com/user-attachments/assets/e0f3739c-8217-47c3-96e2-4186c1e56f68)
+
 ## ⚙️ Application Setup & Running
 
 > ⚠️ **Requirements**:  
