@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wszystkie książki</title>
+    <title>All Books</title>
     <style>
         body, html {
             margin: 0;
@@ -61,10 +61,10 @@
 </head>
 <body>
 <div class="container">
-    <h1>📚 Lista wszystkich książek</h1>
-    <button onclick="getAllBooks()">Pobierz książki</button>
-    <pre id="booksList">Kliknij przycisk powyżej, aby załadować książki...</pre>
-    <a href="index.html" class="back-link">← Powrót do menu</a>
+    <h1>📚 List of All Books</h1>
+    <button onclick="getAllBooks()">Get Books</button>
+    <pre id="booksList">Click the button above to load the books...</pre>
+    <a href="index.html" class="back-link">← Back to Menu</a>
 </div>
 
 <script>
@@ -72,7 +72,7 @@
 
     async function getAllBooks() {
         const display = document.getElementById('booksList');
-        display.textContent = "Ładowanie danych...";
+        display.textContent = "Loading data...";
 
         try {
             const res = await fetch(apiUrl);
@@ -81,13 +81,13 @@
             if (data.responses && data.responses.length > 0) {
                 display.textContent = data.responses.map(book => (
                     `📖 ${book.name} — ${book.author}\n` +
-                    `ID: ${book.id}, Priorytet: ${book.priority}, Strony: ${book.pages}, Przeczytane: ${book.readPages}, Przeczytana: ${book.read}\n`
+                    `ID: ${book.id}, Priority: ${book.priority}, Pages: ${book.pages}, Pages Read: ${book.readPages}, Read: ${book.read}\n`
                 )).join('\n');
             } else {
-                display.textContent = "Brak książek w bazie.";
+                display.textContent = "No books found in the database.";
             }
         } catch (error) {
-            display.textContent = "Błąd podczas pobierania danych: " + error.message;
+            display.textContent = "Error fetching data: " + error.message;
         }
     }
 </script>

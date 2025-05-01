@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Znajdź książkę po ID</title>
+    <title>Find Book by ID</title>
     <style>
         body, html {
             margin: 0;
@@ -70,11 +70,11 @@
 </head>
 <body>
 <div class="container">
-    <h1>🔎 Znajdź książkę po ID</h1>
-    <input type="number" id="bookId" placeholder="Wpisz ID książki">
-    <button onclick="getBookById()">Szukaj</button>
-    <pre id="bookDetails">Wprowadź ID i kliknij "Szukaj", aby zobaczyć książkę...</pre>
-    <a href="index.html" class="back-link">← Powrót do menu</a>
+    <h1>🔎 Find Book by ID</h1>
+    <input type="number" id="bookId" placeholder="Enter book ID">
+    <button onclick="getBookById()">Search</button>
+    <pre id="bookDetails">Enter an ID and click "Search" to view the book details...</pre>
+    <a href="index.html" class="back-link">← Back to menu</a>
 </div>
 
 <script>
@@ -83,17 +83,17 @@
         const display = document.getElementById('bookDetails');
 
         if (!id) {
-            display.textContent = "Proszę podać ID książki.";
+            display.textContent = "Please provide a book ID.";
             return;
         }
 
-        display.textContent = "Ładowanie danych...";
+        display.textContent = "Loading data...";
 
         try {
             const res = await fetch(`http://localhost:8080/book/${id}`);
             if (!res.ok) {
                 const errData = await res.json();
-                display.textContent = `Błąd: ${errData.message || 'Nie znaleziono książki.'}`;
+                display.textContent = `Error: ${errData.message || 'Book not found.'}`;
                 return;
             }
 
@@ -101,12 +101,12 @@
             display.textContent =
                 `📖 ${book.name} — ${book.author}\n\n` +
                 `ID: ${book.id}\n` +
-                `Priorytet: ${book.priority}\n` +
-                `Strony: ${book.pages}\n` +
-                `Przeczytane: ${book.readPages}\n` +
-                `Czy przeczytana: ${book.read}`;
+                `Priority: ${book.priority}\n` +
+                `Pages: ${book.pages}\n` +
+                `Pages Read: ${book.readPages}\n` +
+                `Read: ${book.read}`;
         } catch (error) {
-            display.textContent = "Błąd połączenia z serwerem: " + error.message;
+            display.textContent = "Connection error: " + error.message;
         }
     }
 </script>
