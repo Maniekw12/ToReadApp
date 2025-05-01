@@ -1,6 +1,7 @@
-version: "3.8"
+version: '3.8'
 
 services:
+  # Database service - your existing postgres configuration
   postgres:
     image: postgres:15
     container_name: postgres_container
@@ -11,25 +12,48 @@ services:
       POSTGRES_DB: maniek_data_base
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
 
+  # Backend Spring Boot application
   backend:
-    build: .
-    container_name: maniek_backend
+    build:
+      context: .  # Root directory (contains the Dockerfile)
+      dockerfile: Dockerfile  # Your Spring Boot Dockerfile
+    container_name: backend_container
+    restart: always
+    ports:
+      - "8080:8080"
     depends_on:
       - postgres
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/maniek_data_base
       SPRING_DATASOURCE_USERNAME: maniekapp
       SPRING_DATASOURCE_PASSWORD: maniekapp123
-    ports:
-      - "8080:8080"
-
-  frontend:
-    image: python:3
-    container_name: maniek_frontend
-    working_dir: /app
     volumes:
-      - ./Frontend:/app
+      - ./src:/app/src  # Mount your src directory
+    networks:
+      - app_network
+
+  # Frontend service - simple Python HTTP server
+  frontend:
+    image: python:3.9-slim
+    container_name: frontend_container
+    restart: always
+    volumes:
+      - ./frontend:/app  # Mount your frontend directory
+    working_dir: /app
     command: python -m http.server 8000
     ports:
       - "8000:8000"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
