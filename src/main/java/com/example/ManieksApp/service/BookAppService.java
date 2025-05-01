@@ -6,6 +6,7 @@ import com.example.ManieksApp.exceptions.NonExistingBook;
 import com.example.ManieksApp.mapper.BookMapper;
 import com.example.ManieksApp.repository.BooksRepository;
 import com.example.ManieksApp.request.CreateNewBook;
+import com.example.ManieksApp.request.UpdatePages;
 import com.example.ManieksApp.response.BooksRespone;
 import com.example.ManieksApp.response.BaseResponse;
 import com.example.ManieksApp.response.OneBookResponse;
@@ -105,7 +106,6 @@ public class BookAppService {
         return new BaseResponse("Book removed successfully");
     }
 
-    //TODO change the logic to creating new sorted list and then inserting element between some of them
     public BaseResponse updateBook(Long id, CreateNewBook newBook) {
         ValidateData.validateAuthor(newBook.getAuthor());
         ValidateData.validateName(newBook.getName());
@@ -150,6 +150,38 @@ public class BookAppService {
         return new BaseResponse("Book successfully updated");
     }
 
+    public BaseResponse updatePages(UpdatePages updatedPages) {
+        validateBookExistence(updatedPages.getId());
+        BookEntity BookToUpdate = booksRepository.findById(updatedPages.getId()).get();
+        BookEntity BookAfterUpdatedPages = adjustBookPagesAndPriority(BookToUpdate, updatedPages.getReadPages());
+        booksRepository.save(BookAfterUpdatedPages);
+        return new BaseResponse("Book successfully updated");
+    }
+
+    private BookEntity adjustBookPagesAndPriority(BookEntity book, int updatedNumberOfPages) {
+        if (updatedNumberOfPages < 0) {
+            updatedNumberOfPages = 0;
+        } else if (updatedNumberOfPages > book.getPages()) {
+            updatedNumberOfPages = book.getPages();
+        }
+
+        if (updatedNumberOfPages > book.getPages()) {
+            lowerPrioritiesAfterInsert(book.getPriority());
+            book.setReadPages(updatedNumberOfPages);
+            book.setPriority(Integer.MAX_VALUE);
+            book.setRead(true);
+        } else if (updatedNumberOfPages < book.getPages()) {
+            if (book.isRead()) {
+                int priority = booksRepository.findTopByReadFalseOrderByPriorityDesc().get().getPriority() + 1;
+                book.setPriority(priority);
+                book.setRead(false);
+                book.setReadPages(updatedNumberOfPages);
+            } else {
+                book.setReadPages(updatedNumberOfPages);
+            }
+        }
+        return book;
+    }
 
     private void reorderUnreadBooks(List<BookEntity> books) {
         int priority = 1;

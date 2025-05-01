@@ -1,6 +1,7 @@
 package com.example.ManieksApp.controller;
 
 import com.example.ManieksApp.request.CreateNewBook;
+import com.example.ManieksApp.request.UpdatePages;
 import com.example.ManieksApp.response.BooksRespone;
 import com.example.ManieksApp.response.BaseResponse;
 import com.example.ManieksApp.response.OneBookResponse;
@@ -43,5 +44,10 @@ public class ManieksAppController {
     @PutMapping("/books/update/{id}")
     public BaseResponse updateOneBook(@RequestBody CreateNewBook newBook,@PathVariable Long id){
         return bookAppService.updateBook(id,newBook);
+    }
+
+    @PatchMapping("/books/pages")
+    public BaseResponse updateOneBook(@RequestBody UpdatePages updatePages){
+        return bookAppService.updatePages(updatePages);
     }
 }
