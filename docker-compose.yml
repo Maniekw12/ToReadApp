@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   postgres:
     image: postgres:15
@@ -9,3 +11,25 @@ services:
       POSTGRES_DB: maniek_data_base
     ports:
       - "5432:5432"
+
+  backend:
+    build: .
+    container_name: maniek_backend
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/maniek_data_base
+      SPRING_DATASOURCE_USERNAME: maniekapp
+      SPRING_DATASOURCE_PASSWORD: maniekapp123
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: python:3
+    container_name: maniek_frontend
+    working_dir: /app
+    volumes:
+      - ./Frontend:/app
+    command: python -m http.server 8000
+    ports:
+      - "8000:8000"
