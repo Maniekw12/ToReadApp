@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add a New Book</title>
+    <title>Update Read Pages</title>
     <style>
         body, html {
             margin: 0;
@@ -38,8 +38,8 @@
 
         button {
             padding: 12px;
-            background-color: #28a745;
-            color: white;
+            background-color: #ffc107;
+            color: black;
             border: none;
             border-radius: 8px;
             font-weight: bold;
@@ -48,7 +48,7 @@
         }
 
         button:hover {
-            background-color: #218838;
+            background-color: #e0a800;
         }
 
         .back-link {
@@ -74,14 +74,11 @@
 </head>
 <body>
 <div class="container">
-    <h1>➕ Add a New Book</h1>
-    <form id="bookForm">
-        <input type="text" id="name" placeholder="Title" required>
-        <input type="text" id="author" placeholder="Author" required>
-        <input type="number" id="priority" placeholder="Priority" required>
-        <input type="number" id="pages" placeholder="Total Pages" required>
-        <input type="number" id="readPages" placeholder="Pages Read" required>
-        <button type="submit">Add Book</button>
+    <h1>📘 Update Read Pages</h1>
+    <form id="updateForm">
+        <input type="number" id="id" placeholder="Book ID" required>
+        <input type="number" id="readPages" placeholder="New number of read pages" required>
+        <button type="submit">Update</button>
     </form>
 
     <pre id="response"></pre>
@@ -89,31 +86,28 @@
 </div>
 
 <script>
-    const form = document.getElementById('bookForm');
+    const form = document.getElementById('updateForm');
     const responseDisplay = document.getElementById('response');
-    const apiUrl = "http://localhost:8080/post";
+    const apiUrl = "http://localhost:8080/books/pages";
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const book = {
-            name: document.getElementById('name').value,
-            author: document.getElementById('author').value,
-            priority: parseInt(document.getElementById('priority').value),
-            pages: parseInt(document.getElementById('pages').value),
+        const updateData = {
+            id: parseInt(document.getElementById('id').value),
             readPages: parseInt(document.getElementById('readPages').value)
         };
 
         try {
             const res = await fetch(apiUrl, {
-                method: 'POST',
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(book)
+                body: JSON.stringify(updateData)
             });
             const data = await res.json();
             responseDisplay.textContent = JSON.stringify(data, null, 2);
         } catch (error) {
-            responseDisplay.textContent = "Error sending data: " + error.message;
+            responseDisplay.textContent = "Error updating data: " + error.message;
         }
     });
 </script>

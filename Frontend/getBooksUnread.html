@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Nieprzeczytane książki</title>
+    <title>Unread Books</title>
     <style>
         body, html {
             margin: 0;
@@ -61,10 +61,10 @@
 </head>
 <body>
 <div class="container">
-    <h1>📕 Nieprzeczytane książki</h1>
-    <button onclick="getUnreadBooks()">Pokaż nieprzeczytane</button>
-    <pre id="booksList">Kliknij przycisk, aby załadować nieprzeczytane książki...</pre>
-    <a href="index.html" class="back-link">← Powrót do menu</a>
+    <h1>📕 Unread Books</h1>
+    <button onclick="getUnreadBooks()">Show Unread Books</button>
+    <pre id="booksList">Click the button to load unread books...</pre>
+    <a href="index.html" class="back-link">← Back to Menu</a>
 </div>
 
 <script>
@@ -72,7 +72,7 @@
 
     async function getUnreadBooks() {
         const display = document.getElementById('booksList');
-        display.textContent = "Ładowanie danych...";
+        display.textContent = "Loading data...";
 
         try {
             const res = await fetch(apiUrl);
@@ -81,13 +81,13 @@
             if (data.responses && data.responses.length > 0) {
                 display.textContent = data.responses.map(book => (
                     `📖 ${book.name} — ${book.author}\n` +
-                    `ID: ${book.id}, Priorytet: ${book.priority}, Strony: ${book.pages}, Przeczytane: ${book.readPages}\n`
+                    `ID: ${book.id}, Priority: ${book.priority}, Pages: ${book.pages}, Pages Read: ${book.readPages}\n`
                 )).join('\n');
             } else {
-                display.textContent = "Brak nieprzeczytanych książek.";
+                display.textContent = "No unread books found.";
             }
         } catch (error) {
-            display.textContent = "Błąd podczas pobierania danych: " + error.message;
+            display.textContent = "Error while fetching data: " + error.message;
         }
     }
 </script>
