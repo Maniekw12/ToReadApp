@@ -19,67 +19,55 @@
 ✏️ Update a book – edit book details
 
 
-![image](https://github.com/user-attachments/assets/be29cbb4-d3de-4b50-a743-13b8f42ab210)
-
-![image](https://github.com/user-attachments/assets/708f7a17-562c-4b77-b4bb-d8616694bd72)
-
-![image](https://github.com/user-attachments/assets/c373fd3c-e21b-400d-8890-a1486576edc8)
-
-![image](https://github.com/user-attachments/assets/553645d0-3121-4c46-a5c6-38b6be229ab1)
-
-![image](https://github.com/user-attachments/assets/2c59dc77-0aaa-468c-a081-c0014df03ce4)
-
-![image](https://github.com/user-attachments/assets/3096973f-b32b-4732-8ae6-cc10502364bc)
-
-![image](https://github.com/user-attachments/assets/e0f3739c-8217-47c3-96e2-4186c1e56f68)
-
 ## ⚙️ Application Setup & Running
 
 > ⚠️ **Requirements**:  
 > - Docker must be installed  
-> - Ports `8000` (Frontend) and `8080` (Backend) must be free  
-> - Python (for frontend server)
+> - Ports `8000` (Frontend), `8080` (Backend) and `5432` (database) must be free  
 
 ## Application Set-up and Running
-you should have Docker instaled, ensure your ports: 8000 and 8080 are free to use.
-8000 is responsible for frontend while 8080 for backend.
+Before you begin, ensure that Docker is installed on your machine and that the following ports are available for use:
 
-### Running Backend
-to run application, Firstly you should type 
+>Port 8000: Used by the frontend.
+
+>Port 8080: Used by the backend.
+
+>Port 5432: Used by the database.
+
+
+
+### Build the Application
+To build the application, use the following command:
+
+```bash
+docker compose up --build
+```
+### Running Application
+Once the application is successfully built, you can run the image with:
+
 ```bash
 docker compose up 
 ```
-to set up the database and later
+### Stopping Application
+To stop the containers
 ```bash
-./gradlew bootRun 
+docker compose down 
 ```
-to run application.
 
-### Running Frontend
-to run Frontend, you should open CMD and type: 
-```bash
-cd [Path to Frontend file]
-```
-and later
-```bash
-py -m http.server 8000
-```
-while everything is ready, application will be available on http://localhost:8000.
-> [!WARNING]
-> ENSURE THAT, YOU HAVE PYTHON INSTALLED
->
+Once everything is set up and running, the application will be available at:
+ http://localhost:8000.
 
 
-### Killing the database
 
-to kill database you should type
-```bash
-docker compose down
-```
 ## THINGS TO DO:
-- Make Dockerfile to run the entire Application using one command.
-- Create new Frontend.
+- Develop Tests
+- Design a New Frontend
+- Refactor API Endpoints
 
 
+![img.png](img.png)
 
 
+![img_1.png](img_1.png)
+
+![img_2.png](img_2.png)
