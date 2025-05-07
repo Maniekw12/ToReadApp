@@ -10,6 +10,17 @@ import org.springframework.stereotype.Component;
 
 public class BookMapper {
 
+    public static CreateNewBook mapToCreateNewBook(BookEntity bookEntity) {
+        return CreateNewBook.builder()
+                .priority(bookEntity.getPriority())
+                .name(bookEntity.getName())
+                .author(bookEntity.getAuthor())
+                .pages(bookEntity.getPages())
+                .readPages(bookEntity.getReadPages())
+                .build();
+    }
+
+
     public static BookEntity mapToEntity(CreateNewBook NewBook, int maxPriority, BookEntity bookToUpdate) {
         boolean isRead = false;
         int readPages = NewBook.getReadPages();
