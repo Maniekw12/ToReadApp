@@ -159,29 +159,30 @@ public class BookAppService {
     }
 
     private BookEntity adjustBookPagesAndPriority(BookEntity book, int updatedNumberOfPages) {
-        if (updatedNumberOfPages < 0) {
-            updatedNumberOfPages = 0;
-        } else if (updatedNumberOfPages > book.getPages()) {
-            updatedNumberOfPages = book.getPages();
+        updatedNumberOfPages = Math.max(0, Math.min(updatedNumberOfPages, book.getPages()));
+        boolean wasRead = book.isRead();
+
+        book.setReadPages(updatedNumberOfPages);
+
+        if (updatedNumberOfPages >= book.getPages()) {
+            if (!wasRead) {
+                lowerPrioritiesAfterInsert(book.getPriority());
+            }
+            book.setRead(true);
+            book.setPriority(Integer.MAX_VALUE);
+
+        } else {
+            if (wasRead) {
+                int maxPriority = booksRepository.findTopByReadFalseOrderByPriorityDesc()
+                        .map(BookEntity::getPriority).orElse(0);
+                book.setPriority(maxPriority + 1);
+            }
+            book.setRead(false);
         }
 
-        if (updatedNumberOfPages > book.getPages()) {
-            lowerPrioritiesAfterInsert(book.getPriority());
-            book.setReadPages(updatedNumberOfPages);
-            book.setPriority(Integer.MAX_VALUE);
-            book.setRead(true);
-        } else if (updatedNumberOfPages < book.getPages()) {
-            if (book.isRead()) {
-                int priority = booksRepository.findTopByReadFalseOrderByPriorityDesc().get().getPriority() + 1;
-                book.setPriority(priority);
-                book.setRead(false);
-                book.setReadPages(updatedNumberOfPages);
-            } else {
-                book.setReadPages(updatedNumberOfPages);
-            }
-        }
         return book;
     }
+
 
     private void reorderUnreadBooks(List<BookEntity> books) {
         int priority = 1;
