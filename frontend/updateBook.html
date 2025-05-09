@@ -67,7 +67,7 @@
         };
 
         try {
-            const response = await fetch(`http://localhost:8080/books/update/${id}`, {
+            const response = await fetch(`http://localhost:8080/books/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

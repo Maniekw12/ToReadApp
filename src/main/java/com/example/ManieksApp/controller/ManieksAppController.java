@@ -7,6 +7,8 @@ import com.example.ManieksApp.response.BaseResponse;
 import com.example.ManieksApp.response.OneBookResponse;
 import com.example.ManieksApp.service.BookAppService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,17 +33,17 @@ public class ManieksAppController {
         return bookAppService.getOneBook(id);
     }
 
-    @DeleteMapping("/books/delete/{id}")
+    @DeleteMapping("/books/{id}")
     public BaseResponse deleteOneBook(@PathVariable Long id){
         return bookAppService.removeBook(id);
     }
 
-    @PostMapping("/post")
-    public BaseResponse postOneBook(@RequestBody CreateNewBook newBook){
-        return bookAppService.addBook(newBook);
+    @PostMapping("/newBook")
+    public ResponseEntity<BaseResponse> postOneBook(@RequestBody CreateNewBook newBook){
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookAppService.addBook(newBook));
     }
 
-    @PutMapping("/books/update/{id}")
+    @PutMapping("/books/{id}")
     public BaseResponse updateOneBook(@RequestBody CreateNewBook newBook,@PathVariable Long id){
         return bookAppService.updateBook(id,newBook);
     }

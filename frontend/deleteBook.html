@@ -90,7 +90,7 @@
         display.textContent = "Deleting book...";
 
         try {
-            const res = await fetch(`http://localhost:8080/books/delete/${id}`, {
+            const res = await fetch(`http://localhost:8080/books/${id}`, {
                 method: 'DELETE'
             });
 
