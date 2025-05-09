@@ -1,8 +1,8 @@
-
-> [!WARNING]
-> NOTE: 🚧 Application under development
->
-📌 Features of Maniek's Book App
+# ToReadApp
+The application is created for people who want to track their progress in reading books.
+It allows you to create your 'To Read' list, where you can prioritize which book is the most important for you and manage which books are next in the queue to read.
+It also stores the books you have already read, so you can track how many books you have completed.
+## 📌 Features of ToReadApp
 
 🔍 View all books – browse the entire book collection
 
@@ -18,6 +18,7 @@
 
 ✏️ Update a book – edit book details
 
+📘 Update a progress – change the number of pages you've already read
 
 ## ⚙️ Application Setup & Running
 
@@ -60,10 +61,10 @@ Once everything is set up and running, the application will be available at:
 
 
 ## THINGS TO DO:
-- Develop Tests
+- Develop more tests
 - Design a New Frontend
-- Refactor API Endpoints
 
+## Screenshots:
 
 ![img.png](img.png)
 
